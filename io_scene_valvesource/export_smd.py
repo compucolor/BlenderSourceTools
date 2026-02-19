@@ -2023,8 +2023,6 @@ skeleton
 			bench.report("Animation setup")
 			prev_pos = {}
 			prev_rot = {}
-			skipped_pos = {}
-			skipped_rot = {}
 
 			two_percent = num_frames / 50
 			print("Frames: ",debug_only=True,newline=False)
@@ -2050,33 +2048,11 @@ skeleton
 					rot = relMat.to_quaternion()
 					rot_vec = Vector(rot.to_euler())
 
-					if not prev_pos.get(bone) or pos - prev_pos[bone] > epsilon:
-						skip_time = skipped_pos.get(bone)
-						if skip_time != None:
-							channel[0]["times"].append(skip_time)
-							channel[0]["values"].append(channel[0]["values"][-1])
-							del skipped_pos[bone]
+					channel[0]["times"].append(keyframe_time)
+					channel[0]["values"].append(datamodel.Vector3(pos))
 
-						channel[0]["times"].append(keyframe_time)
-						channel[0]["values"].append(datamodel.Vector3(pos))
-					else:
-						skipped_pos[bone] = keyframe_time
-
-					
-					if not prev_rot.get(bone) or rot_vec - prev_rot[bone] > epsilon:
-						skip_time = skipped_rot.get(bone)
-						if skip_time != None:
-							channel[1]["times"].append(skip_time)
-							channel[1]["values"].append(channel[1]["values"][-1])
-							del skipped_rot[bone]
-
-						channel[1]["times"].append(keyframe_time)
-						channel[1]["values"].append(getDatamodelQuat(rot))
-					else:
-						skipped_rot[bone] = keyframe_time
-
-					prev_pos[bone] = pos
-					prev_rot[bone] = rot_vec
+					channel[1]["times"].append(keyframe_time)
+					channel[1]["values"].append(getDatamodelQuat(rot))
 					
 				if two_percent and frame % two_percent:
 					print(".",debug_only=True,newline=False)
