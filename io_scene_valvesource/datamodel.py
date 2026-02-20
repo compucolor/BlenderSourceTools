@@ -298,7 +298,13 @@ class Element(collections.OrderedDict):
 
 	@property
 	def id(self): return self._id
-	
+	@id.setter
+	def id(self,value):
+		if isinstance(value,uuid.UUID): self._id = value
+		elif isinstance(value,str): self._id = uuid.uuid3(uuid.UUID('20ba94f8-59f0-4579-9e01-50aac4567d3b'),value)
+		else: raise ValueError("id must be uuid.UUID or str")
+		assert(self._id != "DmeJoint")
+
 	def __init__(self,datamodel,name,elemtype="DmElement",id=None,_is_placeholder=False):			
 		self.name = name
 		self.type = elemtype
@@ -307,11 +313,11 @@ class Element(collections.OrderedDict):
 		self._datamodels.add(datamodel)
 		
 		if id:
-			if isinstance(id,uuid.UUID): self._id = id
-			elif isinstance(id,str): self._id = uuid.uuid3(uuid.UUID('20ba94f8-59f0-4579-9e01-50aac4567d3b'),id)
-			else: raise ValueError("id must be uuid.UUID or str")
+			self.id = id
 		else:
 			self._id = uuid.uuid4()
+
+		assert(not self._id or self._id != "DmeJoint")
 		
 		super().__init__()
 		
@@ -842,7 +848,6 @@ def load(path = None, in_file = None, element_path = None):
 				return re.findall("\"(.*?)\"",line.strip("\n\t ") )
 				
 			def read_element(elem_type, line_tracker):
-				name = None
 				prefix = elem_type == "$prefix_element$"
 				if prefix: element_chain.append(dm.prefix_attributes)
 				
@@ -865,6 +870,9 @@ def load(path = None, in_file = None, element_path = None):
 					elif type_str == 'binary': return Binary(binascii.unhexlify(kv2_value))
 				
 				new_elem = None
+				if not prefix:
+					new_elem = dm.add_element(None, elemtype=elem_type)
+					element_chain.append(new_elem)
 				for line_raw in in_file:
 					next(line_tracker)
 					if line_raw.strip("\n\t, ").endswith("}"):
@@ -876,20 +884,18 @@ def load(path = None, in_file = None, element_path = None):
 						continue
 					
 					if line[0] == 'id':
-						if not prefix:
-							new_elem = dm.add_element(name,elem_type,uuid.UUID(hex=line[2]))
-							element_chain.append(new_elem)
+						assert(not prefix)
+						new_elem.id = uuid.UUID(hex=line[2])
 						continue
 					elif line[0] == 'name':
 						if len(line) > 2: # unnamed element?
-							if new_elem: new_elem.name = line[2]
-							else: name = line[2]
+							new_elem.name = line[2]
 						continue
 					
 					# don't read elements outside the element path
-					if max_elem_path and name and len(dm.elements):
+					if max_elem_path and new_elem.name and len(dm.elements):
 						if len(element_path):
-							skip = name.lower() != element_path[0].lower()
+							skip = new_elem.name.lower() != element_path[0].lower()
 						else:
 							skip = len(element_chain) < max_elem_path
 						if skip:
@@ -903,9 +909,6 @@ def load(path = None, in_file = None, element_path = None):
 							return
 						elif len(element_path):
 							del element_path[0]
-					
-					if new_elem == None and not prefix:
-						continue
 					
 					if len(line) >= 2:
 						if line[1] == "element_array":
