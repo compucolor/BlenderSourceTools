@@ -252,7 +252,7 @@ _data = {
 	'en': "Armature Properties ({0})",
 },
 'export_all_actions': {
-	'en': "Export All Actions ({0})",
+	'en': "Export All {1} Actions ({0})",
 },
 'export_all_actions_no_armature': {
 	'en': "Export All Actions (No Armature Selected)",
