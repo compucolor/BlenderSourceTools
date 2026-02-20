@@ -55,7 +55,7 @@ class SmdImporter(bpy.types.Operator, Logger):
 		default='APPEND')
 	upAxis : EnumProperty(name="Up Axis",items=axes,default='Z',description=get_id("importer_up_tip"))
 	rotMode : EnumProperty(name=get_id("importer_rotmode"),items=( ('XYZ', "Euler", ''), ('QUATERNION', "Quaternion", "") ),default='XYZ',description=get_id("importer_rotmode_tip"))
-	boneMode : EnumProperty(name=get_id("importer_bonemode"),items=(('NONE','Default',''),('ARROWS','Arrows',''),('SPHERE','Sphere','')),default='SPHERE',description=get_id("importer_bonemode_tip"))
+	boneMode : EnumProperty(name=get_id("importer_bonemode"),items=(('NONE','Blender Default',''),('ARROWS','Arrows',''),('SPHERE','Sphere','')),default='NONE',description=get_id("importer_bonemode_tip"))
 	
 	def __init__(self, *args, **kwargs):
 		bpy.types.Operator.__init__(self, *args, **kwargs)
@@ -331,7 +331,6 @@ class SmdImporter(bpy.types.Operator, Logger):
 			ops.object.mode_set(mode='OBJECT',toggle=False)
 		a = bpy.data.objects.new(armature_name,bpy.data.armatures.new(armature_name))
 		a.show_in_front = True
-		a.data.display_type = 'STICK'
 		bpy.context.scene.collection.objects.link(a)
 		for i in bpy.context.selected_objects: i.select_set(False) #deselect all objects
 		a.select_set(True)
@@ -473,12 +472,25 @@ class SmdImporter(bpy.types.Operator, Logger):
 			for i in range(3):
 				dimensions.append(maxs[i] - mins[i])
 		
-			length = max(0.001, (dimensions[0] + dimensions[1] + dimensions[2]) / 600) # very small indeed, but a custom bone is used for display
+			if self.properties.boneMode == 'NONE':
+				length = max(0.001, (dimensions[0] + dimensions[1] + dimensions[2]) / 60)
+			else:
+				# very small indeed, but a custom bone is used for display
+				length = max(0.001, (dimensions[0] + dimensions[1] + dimensions[2]) / 600)
 		
 			# Apply spheres
 			ops.object.mode_set(mode='EDIT')
 			for bone in [smd.a.data.edit_bones[b.name] for b in keyframes.keys()]:
-				bone.tail = bone.head + (bone.tail - bone.head).normalized() * length # Resize loose bone tails based on armature size
+				bone_direction_normalized = (bone.tail - bone.head).normalized()
+				if len(bone.children) > 0 and self.properties.boneMode == 'NONE':
+					child_avg_pos = Vector()
+					for child in bone.children:
+						child_avg_pos += child.head - bone.head
+					this_bone_length = max(length, child_avg_pos.dot(bone_direction_normalized) / len(bone.children))
+				else:
+					# Resize loose bone tails based on overall armature size
+					this_bone_length = length
+				bone.tail = bone.head + bone_direction_normalized * this_bone_length
 				smd.a.pose.bones[bone.name].custom_shape = bone_vis # apply bone shape
 				
 		
