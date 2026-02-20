@@ -335,10 +335,8 @@ class Element(collections.OrderedDict):
 		
 	def __getitem__(self,item):
 		if type(item) != str: raise TypeError("Attribute name must be a string, not {}".format(type(item)))
-		try:
-			return super().__getitem__(item)
-		except KeyError as e:
-			raise AttributeError("No attribute \"{}\" on {}".format(item,self)) from e
+		if item not in super().keys(): raise AttributeError("No attribute \"{}\" on {}".format(item,self))
+		return super().__getitem__(item)
 			
 	def __setitem__(self,key,item):
 		key = str(key)
