@@ -60,6 +60,13 @@ class SMD_MT_ExportChoice(bpy.types.Menu):
 		row.operator(SmdExporter.bl_idname, text=get_id("exportmenu_scene", True).format(num_scene_exports), icon='SCENE_DATA').export_scene = True
 		row.enabled = num_scene_exports > 0
 
+		# Export all animations
+		row = l.row()
+		armature_selected = bpy.context.active_object is not None and bpy.context.active_object.type == "ARMATURE"
+		object_name = get_id("export_all_actions", True).format(bpy.context.active_object.name) if armature_selected else get_id("export_all_actions_no_armature", True)
+		row.operator(SmdExporter.bl_idname, text=object_name, icon='ACTION').export_all_anims = True
+		row.enabled = armature_selected
+
 class SMD_PT_Scene(bpy.types.Panel):
 	bl_label = get_id("exportpanel_title")
 	bl_space_type = "PROPERTIES"

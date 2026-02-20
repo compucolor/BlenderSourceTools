@@ -251,6 +251,12 @@ _data = {
 	'ja': "アーマティアのプロパティ",
 	'en': "Armature Properties ({0})",
 },
+'export_all_actions': {
+	'en': "Export All Actions ({0})",
+},
+'export_all_actions_no_armature': {
+	'en': "Export All Actions (No Armature Selected)",
+},
 'qc_bad_enginepath': {
 	'ja': "エンジンのパスが無効です",
 	'en': "Invalid Engine Path",

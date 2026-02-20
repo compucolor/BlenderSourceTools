@@ -138,6 +138,7 @@ class SmdExporter(bpy.types.Operator, Logger):
 	
 	collection : bpy.props.StringProperty(name=get_id("exporter_prop_group"),description=get_id("exporter_prop_group_tip"))
 	export_scene : bpy.props.BoolProperty(name=get_id("scene_export"),description=get_id("exporter_prop_scene_tip"),default=False)
+	export_all_anims : bpy.props.BoolProperty(name=get_id("export_all_actions"),description=get_id("exporter_prop_scene_tip"),default=False)
 
 	def __init__(self, *args, **kwargs):
 		bpy.types.Operator.__init__(self, *args, **kwargs)
@@ -218,6 +219,13 @@ class SmdExporter(bpy.types.Operator, Logger):
 							self.exportId(context, id)
 					elif id.vs.export:
 						self.exportId(context, id)
+			elif self.export_all_anims:
+				# make sure the object is valid and this object has animation data to export
+				if bpy.context.active_object and bpy.context.active_object.animation_data:
+					# I pray all your actions are on this object :)
+					for x in bpy.data.actions:
+						bpy.context.active_object.animation_data.action = x
+						self.exportId(context, bpy.context.active_object)
 			else:
 				if self.collection == "":
 					for exportable in getSelectedExportables():
@@ -270,6 +278,7 @@ class SmdExporter(bpy.types.Operator, Logger):
 
 		self.collection = ""
 		self.export_scene = False
+		self.export_all_anims = False
 		return {'FINISHED'}
 
 	def sanitiseFilename(self,name):
