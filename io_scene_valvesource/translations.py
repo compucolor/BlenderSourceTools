@@ -257,6 +257,9 @@ _data = {
 'export_all_actions_no_armature': {
 	'en': "Export All Actions (No Armature Selected)",
 },
+'export_all_actions_no_actions': {
+	'en': "Export All Actions (No Actions to Export)",
+},
 'qc_bad_enginepath': {
 	'ja': "エンジンのパスが無効です",
 	'en': "Invalid Engine Path",

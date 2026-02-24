@@ -63,9 +63,16 @@ class SMD_MT_ExportChoice(bpy.types.Menu):
 		# Export all animations
 		row = l.row()
 		armature_selected = bpy.context.active_object is not None and bpy.context.active_object.type == "ARMATURE"
-		object_name = get_id("export_all_actions", True).format(bpy.context.active_object.name, len(bpy.data.actions)) if armature_selected else get_id("export_all_actions_no_armature", True)
+		has_actions = len(bpy.data.actions) > 0
+		object_name = get_id("export_all_actions_no_armature", True)
+
+		if not has_actions and armature_selected:
+			object_name = get_id("export_all_actions_no_actions", True)
+		elif armature_selected:
+			object_name = get_id("export_all_actions", True).format(bpy.context.active_object.name, len(bpy.data.actions))
+
 		row.operator(SmdExporter.bl_idname, text=object_name, icon='ACTION').export_all_anims = True
-		row.enabled = armature_selected
+		row.enabled = armature_selected and has_actions
 
 class SMD_PT_Scene(bpy.types.Panel):
 	bl_label = get_id("exportpanel_title")
