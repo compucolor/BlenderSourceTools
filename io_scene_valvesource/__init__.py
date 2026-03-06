@@ -18,18 +18,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-bl_info = {
-	"name": "Blender Source Tools",
-	"author": "Tom Edwards",
-	"version": (3, 4, 3),
-	"blender": (4, 1, 0),
-	"category": "Import-Export",
-	"location": "File > Import/Export, Scene properties",
-	"wiki_url": "http://steamcommunity.com/groups/BlenderSourceTools",
-	"tracker_url": "http://steamcommunity.com/groups/BlenderSourceTools/discussions/0/",
-	"description": "Importer and exporter for Valve Software's Source Engine. Supports SMD\\VTA, DMX and QC."
-}
-
 import bpy, os
 from bpy.props import StringProperty, BoolProperty, EnumProperty, IntProperty, CollectionProperty, FloatProperty, PointerProperty
 

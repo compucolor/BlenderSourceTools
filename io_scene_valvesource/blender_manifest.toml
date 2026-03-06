@@ -1,0 +1,37 @@
+schema_version = "1.0.0"
+
+id = "ccblendersourcetools"
+version = "3.4.4"
+name = "CC Blender Source Tools"
+tagline = "Import-export as SMD and DMX for use with the Source Engine"
+maintainer = "Magnus Larsen <golgothasTerror101@gmail.com>"
+type = "add-on"
+
+# TODO: set up our website
+website = "https://developer.valvesoftware.com/wiki/Blender_Source_Tools"
+
+tags = ["Animation", "Import-Export", "Mesh"]
+
+blender_version_min = "4.2.0"
+# # Optional: Blender version that the extension does not support, earlier versions are supported.
+# # This can be omitted and defined later on the extensions platform if an issue is found.
+# blender_version_max = "5.1.0"
+
+license = [
+  "SPDX:GPL-2.0-or-later",
+]
+
+[permissions]
+files = "Import-export SMD and DMX from/to disk"
+clipboard = "Copy generated QC to Clipboard"
+
+# # Optional: advanced build settings.
+# # https://docs.blender.org/manual/en/dev/advanced/extensions/command_line_arguments.html#command-line-args-extension-build
+# [build]
+# # These are the default build excluded patterns.
+# # You only need to edit them if you want different options.
+# paths_exclude_pattern = [
+#   "__pycache__/",
+#   "/.git/",
+#   "/*.zip",
+# ]
