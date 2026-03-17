@@ -1,8 +1,8 @@
 schema_version = "1.0.0"
 
-id = "ccblendersourcetools"
+id = "compucolorblendersourcetools"
 version = "3.4.4"
-name = "CC Blender Source Tools"
+name = "Compucolor Blender Source Tools"
 tagline = "Import-export as SMD and DMX for use with the Source Engine"
 maintainer = "Magnus Larsen <golgothasTerror101@gmail.com>"
 type = "add-on"
